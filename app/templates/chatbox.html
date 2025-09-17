@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Umeed</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #7bb5ac;
+            --background-gradient: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+            --text-dark: #2C3E50;
+            --text-light: #5a6878;
+            --user-bubble: #4A90E2;
+            --bot-bubble: #f1f1f1;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --mood-red: #e74c3c;
+            --mood-yellow: #f1c40f;
+            --mood-green: #2ecc71;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--background-gradient); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; color: var(--text-dark); }
+        .chat-container { width: 100%; max-width: 700px; height: 90vh; max-height: 800px; background: white; border-radius: 20px; box-shadow: var(--card-shadow); display: flex; flex-direction: column; overflow: hidden; }
+        .chat-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #eef; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header h5 { margin: 0; font-weight: 600; color: var(--primary-color); }
+        .back-link { text-decoration: none; color: var(--text-light); font-size: 0.9rem; transition: color 0.3s ease; }
+        .back-link:hover { color: var(--primary-color); }
+        #chat-window { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+        .message { max-width: 80%; padding: 0.75rem 1.25rem; border-radius: 18px; line-height: 1.5; word-wrap: break-word; opacity: 0; transform: translateY(10px); animation: fadeIn 0.4s forwards; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .bot-message { background-color: var(--bot-bubble); color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user-message { background-color: var(--user-bubble); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-input-area { padding: 1rem 1.5rem; border-top: 1px solid #eef; background: #fcfdff; }
+        .starter-prompts { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+        .prompt-btn { background: #eef; border: 1px solid #e0e5f0; border-radius: 20px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; }
+        .prompt-btn:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .input-group { display: flex; gap: 10px; }
+        #user-input { border-radius: 20px; border: 1px solid #ddd; padding: 0.75rem 1rem; transition: border-color 0.3s ease, box-shadow 0.3s ease; flex-grow: 1; }
+        #user-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(123, 181, 172, 0.2); outline: none; }
+        #send-btn { border-radius: 50%; width: 48px; height: 48px; background: var(--primary-color); color: white; border: none; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s ease; flex-shrink: 0; }
+        #send-btn:hover { background-color: #6a9f96; }
+        .typing-indicator { display: flex; align-items: center; gap: 5px; }
+        .typing-indicator span { height: 8px; width: 8px; background-color: #ccc; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-of-type(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-of-type(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        /* --- UPDATED ODOMETER GAUGE CSS --- */
+        .mood-gauge {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 150px;
+            height: 75px;
+            z-index: 1000;
+        }
+        .gauge-body {
+            width: 100%;
+            height: 100%;
+            /* This gradient now has hard stops to create distinct color zones */
+            background: conic-gradient(from -90deg at 50% 100%, 
+                var(--mood-red) 0deg 60deg, 
+                var(--mood-yellow) 60deg 120deg, 
+                var(--mood-green) 120deg 180deg);
+            border-radius: 150px 150px 0 0;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .gauge-body::before { /* Hides the bottom half to create a semi-circle */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 5px;
+            right: 5px;
+            height: 70px;
+            background: var(--background-gradient);
+            border-radius: 140px 140px 0 0;
+        }
+        .gauge-needle {
+            width: 3px;
+            height: 60px;
+            background: var(--text-dark);
+            border-radius: 5px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform-origin: bottom center;
+            /* Default position is yellow/neutral */
+            transform: translateX(-50%) rotate(0deg);
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy transition */
+        }
+        .gauge-needle::after { /* Creates the pivot circle */
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background: var(--text-dark);
+            border-radius: 50%;
+        }
+        .gauge-label {
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        /* Needle rotation classes - angles point to the middle of each color zone */
+        .mood-red-needle { transform: translateX(-50%) rotate(-65deg); }
+        .mood-yellow-needle { transform: translateX(-50%) rotate(0deg); }
+        .mood-green-needle { transform: translateX(-50%) rotate(65deg); }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <header class="chat-header">
+            <h5>Umeed AI (Dost)</h5>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+        <div id="chat-window">
+            <div class="message bot-message">Hello, I'm Dost. 😊 I'm here to listen. Share what's on your mind.</div>
+        </div>
+        <div class="chat-input-area">
+             <div class="starter-prompts">
+                <button class="prompt-btn">"I'm feeling overwhelmed..."</button>
+                <button class="prompt-btn">"I need to vent about my studies."</button>
+                <button class="prompt-btn">"Can we just talk?"</button>
+            </div>
+            <div class="input-group">
+                <input type="text" class="form-control" id="user-input" placeholder="Share what's on your mind...">
+                <button class="btn" id="send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-short" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="crisisModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white"><h5 class="modal-title">Immediate Support Available</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <p>It sounds like you are in significant distress. Please know that help is available and you don't have to go through this alone.</p>
+            <p class="fw-bold fs-4 text-center">National Helpline: <span id="helpline-number"></span></p>
+            <p>Please reach out now. They are there to listen and support you.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mood-gauge">
+        <div class="gauge-body">
+            <div id="mood-needle" class="gauge-needle"></div>
+        </div>
+        <div class="gauge-label">Mood Meter</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sendBtn = document.getElementById('send-btn');
+            const userInput = document.getElementById('user-input');
+            const chatWindow = document.getElementById('chat-window');
+            const starterPrompts = document.querySelector('.starter-prompts');
+            const crisisModal = new bootstrap.Modal(document.getElementById('crisisModal'));
+            const helplineSpan = document.getElementById('helpline-number');
+            const moodNeedle = document.getElementById('mood-needle');
+
+            async function sendMessage(messageText) {
+                const message = messageText || userInput.value.trim();
+                if (message === '') return;
+
+                appendMessage(message, 'user');
+                userInput.value = '';
+                starterPrompts.style.display = 'none';
+                appendTypingIndicator();
+
+                try {
+                    const response = await fetch("/api/ask", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: message })
+                    });
+                    
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    removeTypingIndicator();
+                    appendMessage(data.response, 'bot');
+
+                    if (data.mood) {
+                        updateMoodTracker(data.mood);
+                    }
+
+                    if (data.is_crisis) {
+                        helplineSpan.textContent = data.helpline;
+                        crisisModal.show();
+                    }
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    removeTypingIndicator();
+                    appendMessage('I seem to be having trouble connecting. Please try again in a moment.', 'bot');
+                }
+            }
+            
+            function updateMoodTracker(mood) {
+                moodNeedle.classList.remove('mood-green-needle', 'mood-yellow-needle', 'mood-red-needle');
+
+                switch (mood.toLowerCase()) {
+                    case 'happy':
+                    case 'positive':
+                        moodNeedle.classList.add('mood-green-needle');
+                        break;
+                    case 'upset':
+                    case 'neutral':
+                    case 'anxious':
+                        moodNeedle.classList.add('mood-yellow-needle');
+                        break;
+                    case 'sad':
+                    case 'angry':
+                    case 'negative':
+                        moodNeedle.classList.add('mood-red-needle');
+                        break;
+                }
+            }
+            
+            function appendMessage(text, sender) { const messageDiv = document.createElement('div'); messageDiv.className = `message ${sender}-message`; messageDiv.textContent = text; chatWindow.appendChild(messageDiv); chatWindow.scrollTop = chatWindow.scrollHeight; }
+            function appendTypingIndicator() { const indicatorDiv = document.createElement('div'); indicatorDiv.className = 'message bot-message typing-indicator'; indicatorDiv.innerHTML = '<span></span><span></span><span></span>'; chatWindow.appendChild(indicatorDiv); chatWindow.scrollTop = chatWindow.scrollHeight; }
+            function removeTypingIndicator() { const indicator = chatWindow.querySelector('.typing-indicator'); if (indicator) { chatWindow.removeChild(indicator); } }
+
+            sendBtn.addEventListener('click', () => sendMessage());
+            userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+            document.querySelectorAll('.prompt-btn').forEach(button => { button.addEventListener('click', () => { sendMessage(button.textContent.replace(/"/g, '')); }); });
+        });
+    </script>
+</body>
+</html>

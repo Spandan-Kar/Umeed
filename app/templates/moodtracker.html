@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracker -Umeed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+
+        :root {
+            --primary-blue: #87CEEB;
+            --dark-blue: #4A90E2;
+            --accent-teal: #B2E5E5;
+            --accent-lavender: #E6E6FA;
+            --text-dark: #2C3E50;
+            --text-light: #718096;
+            --white: #FFFFFF;
+            --light-gray: #F7FAFC;
+            --background: #f0f8ff;
+            --success: #48BB78;
+            --warning: #ED8936;
+            --error: #F56565;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--background);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            margin-top: 80px;
+        }
+
+        /* Header */
+        .tracker-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            border-radius: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tracker-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .tracker-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tracker-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Today's Check-in */
+        .today-checkin {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(135, 206, 235, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(135, 206, 235, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        /* Mood Selection */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mood-option {
+            background: var(--light-gray);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mood-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(135, 206, 235, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mood-option:hover::before {
+            left: 100%;
+        }
+
+        .mood-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(135, 206, 235, 0.2);
+        }
+
+        .mood-option.selected {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, rgba(135, 206, 235, 0.1), rgba(178, 229, 229, 0.1));
+            transform: translateY(-5px);
+        }
+
+        .mood-emoji {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            animation: bounce 0.5s ease-in-out;
+        }
+
+        .mood-option.selected .mood-emoji {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .mood-label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Energy & Stress Sliders */
+        .sliders-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .slider-group {
+            background: var(--light-gray);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .slider-label {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .mood-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .mood-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(135, 206, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .mood-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(135, 206, 235, 0.6);
+        }
+
+        .slider-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-top: 1rem;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            margin-bottom: 2rem;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: var(--light-gray);
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 5px 20px rgba(135, 206, 235, 0.2);
+        }
+
+        /* Activity Tags */
+        .activity-section {
+            margin-bottom: 2rem;
+        }
+
+        .activity-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .activity-tag {
+            background: var(--light-gray);
+            color: var(--text-dark);
+            padding: 0.8rem 1.5rem;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(135, 206, 235, 0.2), transparent);
+            transition: left 0.4s ease;
+        }
+
+        .activity-tag:hover::before {
+            left: 100%;
+        }
+
+        .activity-tag.selected {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .activity-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(135, 206, 235, 0.3);
+        }
+
+        /* Save Button */
+        .save-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(135, 206, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .save-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .save-btn:hover::before {
+            left: 100%;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(135, 206, 235, 0.4);
+        }
+
+        .save-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Mood History */
+        .mood-history {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(135, 206, 235, 0.1);
+            border: 1px solid rgba(135, 206, 235, 0.2);
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .history-card {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .history-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 10px 25px rgba(135, 206, 235, 0.2);
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .history-mood {
+            font-size: 2.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .history-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            background: linear-gradient(135deg, var(--accent-teal), var(--primary-blue));
+            color: white;
+            padding: 2.5rem;
+            border-radius: 25px;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insights-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" width="50" height="25" patternUnits="userSpaceOnUse"><path d="M0,15 Q12.5,5 25,15 T50,15 T75,15 T100,15 V25 H0 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23waves)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .insights-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .insight-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .insight-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-text {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .mood-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .sliders-section {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .activity-tags {
+                justify-content: center;
+            }
+            
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tracker-header h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message {
+            background: var(--success);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Navbar */
+nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 15px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  /* Smooth transition */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scrolled effect */
+nav.scrolled {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  padding: 10px 5%;
+}
+
+/* Logo */
+nav .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+nav .logo img {
+  height: 60px;   /* Adjust size */
+  width: auto;
+}
+
+nav .logo span {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+
+/* Links */
+nav ul {
+  display: flex;
+  gap: 25px;
+  list-style: none;
+  align-items: center;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+nav ul li a:hover {
+  color:#7bb5ac;
+}
+
+/* Button */
+nav .btn {
+  padding: 8px 16px;
+  background:#7bb5ac;
+  color: #fff !important;
+  border-radius: 8px;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+nav .btn:hover {
+  background:#2c3e50;
+}
+
+/* Hamburger (for mobile) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #333;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Mobile Menu */
+.menu-links {
+  position: absolute;
+  right: 5%;
+  top: 70px;
+  background-color: white;
+  width: fit-content;
+  max-height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+.menu-links a {
+  display: block;
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 1rem;
+  color: black;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.menu-links li {
+  list-style: none;
+}
+
+.menu-links.open {
+  max-height: 300px;
+}
+
+/* Hamburger animation */
+.hamburger.open span:first-child {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:last-child {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  nav ul {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+<nav>
+  <div class="logo">
+    <img src="./components/logo.png" alt="Umeed Logo" />
+  </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/peerforum">Peer Forums</a></li>
+    <li><a href="/chat" class="btn">Get Started</a></li>
+  </ul>
+
+  <!-- Hamburger for mobile -->
+  <div class="hamburger" onclick="toggleMenu(this)">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Mobile links -->
+  <div class="menu-links">
+    <li><a href="/" onclick="toggleMenu()">Home</a></li>
+    <li><a href="/about" onclick="toggleMenu()">About</a></li>
+    <li><a href="/peerforum" onclick="toggleMenu()">Peer forums</a></li>
+    <li><a href="/chat" class="btn" onclick="toggleMenu()">Get Started</a></li>
+  </div>
+</nav>
+    <div class="container">
+        <!-- Header -->
+        <div class="tracker-header fade-in">
+            <h1>Daily Mood Check-in</h1>
+            <p>How are you feeling today? Let's track your journey to better mental health</p>
+        </div>
+
+        <!-- Today's Check-in -->
+        <div class="today-checkin fade-in">
+            <h2 class="section-title">Today's Check-in</h2>
+            
+            <!-- Mood Selection -->
+            <div class="mood-selection">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">How's your mood?</h3>
+                <div class="mood-grid">
+                    <div class="mood-option" data-mood="amazing">
+                        <span class="mood-emoji">🤩</span>
+                        <div class="mood-label">Amazing</div>
+                    </div>
+                    <div class="mood-option" data-mood="happy">
+                        <span class="mood-emoji">😊</span>
+                        <div class="mood-label">Happy</div>
+                    </div>
+                    <div class="mood-option" data-mood="good">
+                        <span class="mood-emoji">🙂</span>
+                        <div class="mood-label">Good</div>
+                    </div>
+                    <div class="mood-option" data-mood="okay">
+                        <span class="mood-emoji">😐</span>
+                        <div class="mood-label">Okay</div>
+                    </div>
+                    <div class="mood-option" data-mood="meh">
+                        <span class="mood-emoji">😕</span>
+                        <div class="mood-label">Meh</div>
+                    </div>
+                    <div class="mood-option" data-mood="stressed">
+                        <span class="mood-emoji">😰</span>
+                        <div class="mood-label">Stressed</div>
+                    </div>
+                    <div class="mood-option" data-mood="sad">
+                        <span class="mood-emoji">😢</span>
+                        <div class="mood-label">Sad</div>
+                    </div>
+                    <div class="mood-option" data-mood="anxious">
+                        <span class="mood-emoji">😟</span>
+                        <div class="mood-label">Anxious</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Energy & Stress Sliders -->
+            <div class="sliders-section">
+                <div class="slider-group">
+                    <div class="slider-label">Energy Level</div>
+                    <div class="slider-container">
+                        <input type="range" min="1" max="10" value="5" class="mood-slider" id="energy-slider">
+                        <div class="slider-value" id="energy-value">5/10</div>
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">Stress Level</div>
+                    <div class="slider-container">
+                        <input type="range" min="1" max="10" value="5" class="mood-slider" id="stress-slider">
+                        <div class="slider-value" id="stress-value">5/10</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activities -->
+            <div class="activity-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">What did you do today?</h3>
+                <div class="activity-tags">
+                    <div class="activity-tag" data-activity="studied">📚 Studied</div>
+                    <div class="activity-tag" data-activity="exercised">🏃‍♀️ Exercised</div>
+                    <div class="activity-tag" data-activity="socialised">👥 Socialised</div>
+                    <div class="activity-tag" data-activity="relaxed">🧘‍♀️ Relaxed</div>
+                    <div class="activity-tag" data-activity="worked">💼 Worked</div>
+                    <div class="activity-tag" data-activity="slept-well">😴 Slept Well</div>
+                    <div class="activity-tag" data-activity="ate-healthy">🥗 Ate Healthy</div>
+                    <div class="activity-tag" data-activity="procrastinated">📱 Procrastinated</div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="notes-section">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">Any thoughts or notes?</h3>
+                <textarea 
+                    class="notes-textarea" 
+                    id="mood-notes"
+                    placeholder="How are you feeling? What's on your mind? Any wins or challenges today?"
+                    maxlength="500"
+                ></textarea>
+            </div>
+
+            <!-- Save Button -->
+            <div class="save-section">
+                <button class="save-btn" onclick="saveMoodEntry()">
+                    💾 Save Today's Check-in
+                </button>
+                <div class="success-message" id="success-message">
+                    ✨ Mood saved successfully! Keep up the great work! ✨
+                </div>
+            </div>
+        </div>
+
+        <!-- Mood History -->
+        <div class="mood-history fade-in">
+            <h2 class="section-title">Your Mood Journey</h2>
+            <div class="history-grid" id="mood-history">
+                <!-- Dynamic mood history will be populated here -->
+            </div>
+        </div>
+
+        <!-- Insights Panel -->
+        <div class="insights-panel fade-in">
+            <div class="insights-content">
+                <h2 class="section-title" style="color: white; margin-bottom: 2rem;">Weekly Insights</h2>
+                <div class="insight-item">
+                    <div class="insight-title">🎯 Mood Trend</div>
+                    <div class="insight-text">Your mood has been trending upward this week! Keep up the positive momentum.</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-title">⚡ Energy Pattern</div>
+                    <div class="insight-text">You tend to have higher energy levels on days when you exercise. Consider maintaining your workout routine.</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-title">📚 Study Impact</div>
+                    <div class="insight-text">Your stress levels are lower on days with balanced study sessions. Try breaking up long study periods.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mood tracking data
+        let moodData = JSON.parse(localStorage.getItem('moodData') || '[]');
+        let currentMood = '';
+        let selectedActivities = [];
+
+        // Initialize the tracker
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMoodHistory();
+            setupEventListeners();
+            animateElements();
+        });
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Mood selection
+            document.querySelectorAll('.mood-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    currentMood = this.dataset.mood;
+                    
+                    // Add fun animation
+                    const emoji = this.querySelector('.mood-emoji');
+                    emoji.style.animation = 'bounce 0.5s ease-in-out';
+                    setTimeout(() => {
+                        emoji.style.animation = 'pulse 1s ease-in-out infinite';
+                    }, 500);
+                });
+            });
+
+            // Activity selection
+            document.querySelectorAll('.activity-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const activity = this.dataset.activity;
+                    
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        selectedActivities = selectedActivities.filter(a => a !== activity);
+                    } else {
+                        this.classList.add('selected');
+                        selectedActivities.push(activity);
+                    }
+                });
+            });
+
+            // Slider updates
+            const energySlider = document.getElementById('energy-slider');
+            const stressSlider = document.getElementById('stress-slider');
+            const energyValue = document.getElementById('energy-value');
+            const stressValue = document.getElementById('stress-value');
+
+            energySlider.addEventListener('input', function() {
+                energyValue.textContent = `${this.value}/10`;
+                updateSliderColor(this);
+            });
+
+            stressSlider.addEventListener('input', function() {
+                stressValue.textContent = `${this.value}/10`;
+                updateSliderColor(this);
+            });
+        }
+
+        // Update slider background color based on value
+        function updateSliderColor(slider) {
+            const value = slider.value;
+            const max = slider.max;
+            const percentage = (value / max) * 100;
+            
+            let color;
+            if (slider.id === 'energy-slider') {
+                color = `linear-gradient(90deg, #48BB78 0%, #68D391 ${percentage}%, #e2e8f0 ${percentage}%, #e2e8f0 100%)`;
+            } else {
+                color = `linear-gradient(90deg, #F56565 0%, #FC8181 ${percentage}%, #e2e8f0 ${percentage}%, #e2e8f0 100%)`;
+            }
+            
+            slider.style.background = color;
+        }
+
+        // Save mood entry
+        function saveMoodEntry() {
+            if (!currentMood) {
+                alert('Please select your mood first! 😊');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                mood: currentMood,
+                energy: document.getElementById('energy-slider').value,
+                stress: document.getElementById('stress-slider').value,
+                activities: [...selectedActivities],
+                notes: document.getElementById('mood-notes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Check if entry for today already exists
+            const today = new Date().toISOString().split('T')[0];
+            const existingIndex = moodData.findIndex(item => item.date === today);
+            
+            if (existingIndex !== -1) {
+                moodData[existingIndex] = entry;
+            } else {
+                moodData.unshift(entry);
+            }
+
+            // Keep only last 30 days
+            if (moodData.length > 30) {
+                moodData = moodData.slice(0, 30);
+            }
+
+            // Save to localStorage
+            localStorage.setItem('moodData', JSON.stringify(moodData));
+
+            // Show success message
+            showSuccessMessage();
+            
+            // Refresh history
+            loadMoodHistory();
+            
+            // Add celebration animation
+            celebrateEntry();
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            const message = document.getElementById('success-message');
+            message.classList.add('show');
+            
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 3000);
+        }
+
+        // Celebrate entry with confetti-like effect
+        function celebrateEntry() {
+            const button = document.querySelector('.save-btn');
+            
+            // Create floating emojis
+            const emojis = ['✨', '🎉', '💙', '🌟', '💚'];
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.position = 'fixed';
+                    emoji.style.left = (button.getBoundingClientRect().left + Math.random() * button.offsetWidth) + 'px';
+                    emoji.style.top = button.getBoundingClientRect().top + 'px';
+                    emoji.style.fontSize = '1.5rem';
+                    emoji.style.pointerEvents = 'none';
+                    emoji.style.zIndex = '1000';
+                    emoji.style.animation = 'celebrate-float 2s ease-out forwards';
+                    
+                    document.body.appendChild(emoji);
+                    
+                    setTimeout(() => emoji.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        // Add celebration animation
+        const celebrateStyle = document.createElement('style');
+        celebrateStyle.textContent = `
+            @keyframes celebrate-float {
+                0% {
+                    opacity: 1;
+                    transform: translateY(0px) scale(0.5);
+                }
+                50% {
+                    transform: translateY(-40px) scale(1.2);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-80px) scale(0.8);
+                }
+            }
+        `;
+        document.head.appendChild(celebrateStyle);
+
+        // Load mood history
+        function loadMoodHistory() {
+            const historyContainer = document.getElementById('mood-history');
+            
+            if (moodData.length === 0) {
+                historyContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-light);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                        <h3>No mood entries yet</h3>
+                        <p>Start tracking your mood to see insights here!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            historyContainer.innerHTML = moodData.map(entry => {
+                const date = new Date(entry.date);
+                const formattedDate = date.toLocaleDateString('en-IN', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                const moodEmojis = {
+                    'amazing': '🤩',
+                    'happy': '😊',
+                    'good': '🙂',
+                    'okay': '😐',
+                    'meh': '😕',
+                    'stressed': '😰',
+                    'sad': '😢',
+                    'anxious': '😟'
+                };
+
+                return `
+                    <div class="history-card" onclick="showEntryDetails('${entry.id}')">
+                        <div class="history-date">${formattedDate}</div>
+                        <div class="history-mood">${moodEmojis[entry.mood] || '😐'}</div>
+                        <div class="history-stats">
+                            <span>⚡${entry.energy}/10</span>
+                            <span>😰${entry.stress}/10</span>
+                        </div>
+                        ${entry.activities.length > 0 ? `
+                            <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-light);">
+                                ${entry.activities.slice(0, 2).map(activity => 
+                                    getActivityEmoji(activity)
+                                ).join(' ')}
+                                ${entry.activities.length > 2 ? ` +${entry.activities.length - 2}` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get emoji for activity
+        function getActivityEmoji(activity) {
+            const activityEmojis = {
+                'studied': '📚',
+                'exercised': '🏃‍♀️',
+                'socialised': '👥',
+                'relaxed': '🧘‍♀️',
+                'worked': '💼',
+                'slept-well': '😴',
+                'ate-healthy': '🥗',
+                'procrastinated': '📱'
+            };
+            return activityEmojis[activity] || '📝';
+        }
+
+        // Show entry details (modal or expanded view)
+        function showEntryDetails(entryId) {
+            const entry = moodData.find(item => item.id == entryId);
+            if (!entry) return;
+
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                padding: 2rem;
+                border-radius: 25px;
+                max-width: 500px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                position: relative;
+                animation: slideUp 0.3s ease;
+            `;
+
+            const moodEmojis = {
+                'amazing': '🤩',
+                'happy': '😊',
+                'good': '🙂',
+                'okay': '😐',
+                'meh': '😕',
+                'stressed': '😰',
+                'sad': '😢',
+                'anxious': '😟'
+            };
+
+            const date = new Date(entry.date).toLocaleDateString('en-IN', { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            modalContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="color: var(--text-dark); margin-bottom: 0.5rem;">${date}</h2>
+                    <div style="font-size: 4rem; margin: 1rem 0;">${moodEmojis[entry.mood]}</div>
+                    <div style="font-size: 1.2rem; font-weight: 600; text-transform: capitalize; color: var(--primary-blue);">
+                        ${entry.mood}
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                    <div style="text-align: center; padding: 1rem; background: var(--light-gray); border-radius: 15px;">
+                        <div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem;">Energy</div>
+                        <div style="font-size: 2rem; color: var(--success);">⚡${entry.energy}/10</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: var(--light-gray); border-radius: 15px;">
+                        <div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem;">Stress</div>
+                        <div style="font-size: 2rem; color: var(--error);">😰${entry.stress}/10</div>
+                    </div>
+                </div>
+
+                ${entry.activities.length > 0 ? `
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 1rem; text-align: center;">Activities</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
+                            ${entry.activities.map(activity => `
+                                <span style="background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue)); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">
+                                    ${getActivityEmoji(activity)} ${activity.replace('-', ' ')}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${entry.notes ? `
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 1rem; text-align: center;">Notes</h3>
+                        <div style="background: var(--light-gray); padding: 1.5rem; border-radius: 15px; line-height: 1.6; color: var(--text-dark);">
+                            ${entry.notes}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <button onclick="this.closest('.modal').remove()" style="
+                    position: absolute;
+                    top: 1rem;
+                    right: 1rem;
+                    background: var(--light-gray);
+                    border: none;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    font-size: 1.2rem;
+                    cursor: pointer;
+                    color: var(--text-dark);
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.background='var(--primary-blue)'; this.style.color='white';" 
+                   onmouseout="this.style.background='var(--light-gray)'; this.style.color='var(--text-dark)';">
+                    ✕
+                </button>
+
+                <div style="text-align: center;">
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+                        color: white;
+                        padding: 0.8rem 2rem;
+                        border: none;
+                        border-radius: 25px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Close on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+
+            // Close on Escape key
+            const escapeHandler = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+        }
+
+        // Animate elements on scroll
+        function animateElements() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationDelay = '0.1s';
+                        entry.target.style.animationFillMode = 'both';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Generate mood insights based on data
+        function generateInsights() {
+            if (moodData.length < 3) return;
+
+            const insights = document.querySelector('.insights-content');
+            const recentEntries = moodData.slice(0, 7); // Last 7 days
+            
+            // Calculate averages
+            const avgMood = calculateMoodAverage(recentEntries);
+            const avgEnergy = recentEntries.reduce((sum, entry) => sum + parseInt(entry.energy), 0) / recentEntries.length;
+            const avgStress = recentEntries.reduce((sum, entry) => sum + parseInt(entry.stress), 0) / recentEntries.length;
+            
+            // Most common activities
+            const allActivities = recentEntries.flatMap(entry => entry.activities);
+            const activityCounts = {};
+            allActivities.forEach(activity => {
+                activityCounts[activity] = (activityCounts[activity] || 0) + 1;
+            });
+            
+            const topActivity = Object.keys(activityCounts).reduce((a, b) => 
+                activityCounts[a] > activityCounts[b] ? a : b, ''
+            );
+
+            // Update insights
+            const insightItems = insights.querySelectorAll('.insight-item');
+            
+            if (insightItems[0]) {
+                insightItems[0].innerHTML = `
+                    <div class="insight-title">📊 Weekly Average</div>
+                    <div class="insight-text">Your mood averaged ${avgMood}/10 this week, energy at ${avgEnergy.toFixed(1)}/10, and stress at ${avgStress.toFixed(1)}/10.</div>
+                `;
+            }
+
+            if (insightItems[1] && topActivity) {
+                insightItems[1].innerHTML = `
+                    <div class="insight-title">${getActivityEmoji(topActivity)} Top Activity</div>
+                    <div class="insight-text">You ${topActivity.replace('-', ' ')} most often this week! This activity appeared in ${activityCounts[topActivity]} of your entries.</div>
+                `;
+            }
+
+            if (insightItems[2]) {
+                const trend = calculateTrend(recentEntries);
+                insightItems[2].innerHTML = `
+                    <div class="insight-title">${trend.emoji} Mood Trend</div>
+                    <div class="insight-text">${trend.message}</div>
+                `;
+            }
+        }
+
+        // Calculate mood average
+        function calculateMoodAverage(entries) {
+            const moodValues = {
+                'amazing': 10,
+                'happy': 8,
+                'good': 7,
+                'okay': 5,
+                'meh': 4,
+                'stressed': 3,
+                'sad': 2,
+                'anxious': 2
+            };
+            
+            const total = entries.reduce((sum, entry) => sum + (moodValues[entry.mood] || 5), 0);
+            return (total / entries.length).toFixed(1);
+        }
+
+        // Calculate mood trend
+        function calculateTrend(entries) {
+            if (entries.length < 3) return { emoji: '📊', message: 'Keep logging to see trends!' };
+            
+            const moodValues = {
+                'amazing': 10, 'happy': 8, 'good': 7, 'okay': 5,
+                'meh': 4, 'stressed': 3, 'sad': 2, 'anxious': 2
+            };
+            
+            const recent = entries.slice(0, 3).map(e => moodValues[e.mood] || 5);
+            const older = entries.slice(3, 6).map(e => moodValues[e.mood] || 5);
+            
+            const recentAvg = recent.reduce((a, b) => a + b) / recent.length;
+            const olderAvg = older.reduce((a, b) => a + b) / (older.length || 1);
+            
+            if (recentAvg > olderAvg + 0.5) {
+                return { emoji: '📈', message: 'Your mood is trending upward! Keep up whatever you\'re doing.' };
+            } else if (recentAvg < olderAvg - 0.5) {
+                return { emoji: '📉', message: 'Your mood has been lower lately. Consider reaching out for support.' };
+            } else {
+                return { emoji: '📊', message: 'Your mood has been stable this week. Consistency is good!' };
+            }
+        }
+
+        // Initialize insights when data changes
+        setTimeout(() => {
+            if (moodData.length >= 3) {
+                generateInsights();
+            }
+        }, 1000);
+
+        // Add modal animations
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes slideUp {
+                from { 
+                    opacity: 0;
+                    transform: translateY(50px) scale(0.9);
+                }
+                to { 
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+        `;
+        document.head.appendChild(modalStyles);
+
+        // Auto-save draft as user types
+        let saveTimeout;
+        document.getElementById('mood-notes').addEventListener('input', function() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                localStorage.setItem('moodDraft', JSON.stringify({
+                    mood: currentMood,
+                    energy: document.getElementById('energy-slider').value,
+                    stress: document.getElementById('stress-slider').value,
+                    activities: selectedActivities,
+                    notes: this.value,
+                    timestamp: Date.now()
+                }));
+            }, 1000);
+        });
+
+        // Load draft on page load
+        const draft = JSON.parse(localStorage.getItem('moodDraft') || 'null');
+        const today = new Date().toISOString().split('T')[0];
+        const todayEntry = moodData.find(entry => entry.date === today);
+
+        if (draft && !todayEntry && (Date.now() - draft.timestamp < 24 * 60 * 60 * 1000)) {
+            // Load draft if it's less than 24 hours old and no entry for today
+            if (draft.mood) {
+                document.querySelector(`[data-mood="${draft.mood}"]`).click();
+            }
+            if (draft.energy) {
+                document.getElementById('energy-slider').value = draft.energy;
+                document.getElementById('energy-value').textContent = `${draft.energy}/10`;
+            }
+            if (draft.stress) {
+                document.getElementById('stress-slider').value = draft.stress;
+                document.getElementById('stress-value').textContent = `${draft.stress}/10`;
+            }
+            if (draft.activities) {
+                draft.activities.forEach(activity => {
+                    const tag = document.querySelector(`[data-activity="${activity}"]`);
+                    if (tag) tag.click();
+                });
+            }
+            if (draft.notes) {
+                document.getElementById('mood-notes').value = draft.notes;
+            }
+        }
+          const hamburger = document.querySelector(".hamburger");
+  const menu = document.querySelector(".menu-links");
+
+  // toggle menu on click
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("open");
+    menu.classList.toggle("open");
+  });
+
+  // auto-close menu if resized to desktop
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) {
+      hamburger.classList.remove("open");
+      menu.classList.remove("open");
+    }
+  });
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Forum - Umeed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #7bb5ac;
+            --background-gradient: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+            --text-dark: #2C3E50;
+            --bot-bubble: #f1f1f1;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+            margin: 0;
+        }
+        .forum-container {
+            width: 100%;
+            max-width: 900px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .forum-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .forum-header h5 { margin: 0; font-weight: 600; color: var(--primary-color); }
+        .back-link { text-decoration: none; color: var(--text-dark); font-size: 0.9rem; }
+        #messages {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            list-style-type: none;
+        }
+        #messages li {
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 12px;
+            background: var(--bot-bubble);
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+        .chat-form {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eef;
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        #message_input {
+            flex-grow: 1;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1rem;
+        }
+        #message_input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        #send_button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="forum-container">
+        <header class="forum-header">
+            <h5>Peer Support Forum</h5>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+
+        <ul id="messages">
+            </ul>
+
+        <form class="chat-form" id="chat_form" action="#">
+            <input id="message_input" autocomplete="off" placeholder="Type your message..."/>
+            <button id="send_button">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Connect to the Socket.IO server
+            var socket = io();
+
+            var form = document.getElementById('chat_form');
+            var input = document.getElementById('message_input');
+            var messages = document.getElementById('messages');
+
+            // When the form is submitted, send the message to the server
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (input.value) {
+                    socket.emit('send_message', { 'data': input.value });
+                    input.value = '';
+                }
+            });
+
+            // When a new message is received from the server, display it
+            socket.on('receive_message', function(msg) {
+                var item = document.createElement('li');
+                item.textContent = msg.data;
+                messages.appendChild(item);
+                // Auto-scroll to the bottom
+                messages.scrollTop = messages.scrollHeight;
+            });
+        });
+    </script>
+</body>
+</html>

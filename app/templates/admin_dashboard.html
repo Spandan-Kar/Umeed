@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Umeed</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --text-dark: #212529;
+            --text-light: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            /* Defining colors here for consistency, but using hex codes in JS for reliability */
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --green: #22c55e;
+            --blue: #3b82f6;
+            --teal: #14b8a6;
+            --purple: #8b5cf6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        .container {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap; 
+            gap: 1rem;
+        }
+        .dashboard-header h1 { font-size: 1.8rem; font-weight: 600; }
+        .filter-bar { display: flex; gap: 1rem; align-items: center; }
+        .date-filter {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-background);
+            color: var(--text-light);
+            font-family: inherit;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        .card {
+            background-color: var(--card-background);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            grid-column: span 12; /* Full width on mobile */
+        }
+        @media (min-width: 768px) {
+            .card.span-6 { grid-column: span 6; }
+            .card.span-4 { grid-column: span 4; }
+        }
+        @media (min-width: 1200px) {
+            .card.span-8 { grid-column: span 8; }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+        }
+        .stat-card.blue { background: linear-gradient(45deg, #3b82f6, #60a5fa); }
+        .stat-card.teal { background: linear-gradient(45deg, #14b8a6, #2dd4bf); }
+        .stat-card.purple { background: linear-gradient(45deg, #8b5cf6, #a78bfa); }
+
+        .stat-card .icon { font-size: 2.5rem; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; }
+        .stat-card .label { font-size: 0.9rem; opacity: 0.9; }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+        .chart-container { height: 320px; position: relative; }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .name { font-weight: 500; }
+        .list-item .value { color: var(--text-light); }
+        .progress-bar { width: 100%; height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden; margin-top: 5px; }
+        .progress-bar-fill { height: 100%; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="dashboard-header">
+            <h1>Admin Dashboard</h1>
+            <div class="filter-bar">
+                <input type="date" class="date-filter" value="2025-09-01">
+                <input type="date" class="date-filter" value="2025-09-16">
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <div class="card span-12">
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <i class='bx bxs-user icon'></i>
+                        <div>
+                            <div class="value">1,428</div>
+                            <div class="label">Total Active Users</div>
+                        </div>
+                    </div>
+                    <div class="stat-card teal">
+                        <i class='bx bx-trending-up icon'></i>
+                        <div>
+                            <div class="value">68%</div>
+                            <div class="label">Weekly Engagement</div>
+                        </div>
+                    </div>
+                    <div class="stat-card purple">
+                        <i class='bx bxs-calendar-check icon'></i>
+                        <div>
+                            <div class="value">92</div>
+                            <div class="label">Sessions Booked</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card span-6">
+                <h3 class="card-title">Aggregate Mood Trends</h3>
+                <div class="chart-container">
+                    <canvas id="moodChart"></canvas>
+                </div>
+            </div>
+            <div class="card span-6">
+                <h3 class="card-title">Anonymized Screening Outcomes</h3>
+                <div class="chart-container">
+                    <canvas id="screeningChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card span-6">
+                <h3 class="card-title">Most Popular Resources</h3>
+                <div class="resource-list">
+                    <div class="list-item"><span class="name">1. Video: Managing Exam Stress</span><span class="value">1,024 Views</span></div>
+                    <div class="list-item"><span class="name">2. Article: Understanding Anxiety</span><span class="value">891 Reads</span></div>
+                    <div class="list-item"><span class="name">3. Guide: Mindfulness Exercises</span><span class="value">755 Reads</span></div>
+                    <div class="list-item"><span class="name">4. Peer Forum: General Discussion</span><span class="value">612 Posts</span></div>
+                </div>
+            </div>
+            <div class="card span-6">
+                <h3 class="card-title">Counselor Load (Anonymized)</h3>
+                <div class="counselor-list">
+                    <div class="list-item"><span>Counselor A</span><div class="progress-bar"><div class="progress-bar-fill" style="width: 85%; background: var(--yellow);"></div></div></div>
+                    <div class="list-item"><span>Counselor B</span><div class="progress-bar"><div class="progress-bar-fill" style="width: 95%; background: var(--red);"></div></div></div>
+                    <div class="list-item"><span>Counselor C</span><div class="progress-bar"><div class="progress-bar-fill" style="width: 60%; background: var(--green);"></div></div></div>
+                    <div class="list-item"><span>Counselor D</span><div class="progress-bar"><div class="progress-bar-fill" style="width: 70%; background: var(--green);"></div></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // This dashboard uses placeholder "dummy" data.
+            
+            // Shared options for light theme charts
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: 'var(--text-light)' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: 'var(--text-light)' },
+                        grid: { color: 'var(--border-color)' }
+                    },
+                    y: {
+                        ticks: { color: 'var(--text-light)' },
+                        grid: { color: 'var(--border-color)' }
+                    }
+                }
+            };
+
+            // 1. Mood Trends Chart (Doughnut Chart)
+            const moodCtx = document.getElementById('moodChart').getContext('2d');
+            new Chart(moodCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Anxious/Upset', 'Sad/Angry'],
+                    datasets: [{
+                        label: 'Student Moods',
+                        data: [58, 32, 10],
+                        // CORRECTED: Using direct hex codes for colors to ensure they render
+                        backgroundColor: [ '#22c55e', '#f59e0b', '#ef4444' ],
+                        borderColor: 'var(--card-background)',
+                        borderWidth: 5
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // 2. Screening Outcomes Chart (Bar Chart)
+            const screeningCtx = document.getElementById('screeningChart').getContext('2d');
+            new Chart(screeningCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sept', 'Oct', 'Nov'],
+                    datasets: [
+                        // CORRECTED: Using direct hex codes for colors
+                        { label: 'Mild', data: [120, 150, 130], backgroundColor: '#22c55e' },
+                        { label: 'Moderate', data: [60, 75, 70], backgroundColor: '#f59e0b' },
+                        { label: 'Severe', data: [25, 30, 40], backgroundColor: '#ef4444' }
+                    ]
+                },
+                options: { ...chartOptions, scales: { x: { stacked: true }, y: { stacked: true } } }
+            });
+        });
+    </script>
+</body>
+</html>

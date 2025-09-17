@@ -1,0 +1,60 @@
+:root {
+    --primary-color: #7bb5ac;
+    --background-gradient: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+    --text-dark: #2C3E50;
+    --text-light: #5a6878;
+    --user-bubble: #4A90E2;
+    --bot-bubble: #f1f1f1;
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background-gradient);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text-dark);
+}
+.chat-container {
+    width: 100%;
+    max-width: 700px;
+    height: 90vh;
+    max-height: 800px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.chat-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #eef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chat-header h5 { margin: 0; font-weight: 600; color: var(--primary-color); }
+.back-link { text-decoration: none; color: var(--text-light); font-size: 0.9rem; transition: color 0.3s ease; }
+.back-link:hover { color: var(--primary-color); }
+#chat-window { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+.message { max-width: 80%; padding: 0.75rem 1.25rem; border-radius: 18px; line-height: 1.5; word-wrap: break-word; opacity: 0; transform: translateY(10px); animation: fadeIn 0.4s forwards; }
+@keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+.bot-message { background-color: var(--bot-bubble); color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 4px; }
+.user-message { background-color: var(--user-bubble); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-input-area { padding: 1rem 1.5rem; border-top: 1px solid #eef; background: #fcfdff; }
+.starter-prompts { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+.prompt-btn { background: #eef; border: 1px solid #e0e5f0; border-radius: 20px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; }
+.prompt-btn:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+.input-group { display: flex; gap: 10px; }
+#user-input { border-radius: 20px; border: 1px solid #ddd; padding: 0.75rem 1rem; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+#user-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(123, 181, 172, 0.2); outline: none; }
+#send-btn { border-radius: 50%; width: 48px; height: 48px; background: var(--primary-color); color: white; border: none; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s ease; }
+#send-btn:hover { background-color: #6a9f96; }
+.typing-indicator { display: flex; align-items: center; gap: 5px; }
+.typing-indicator span { height: 8px; width: 8px; background-color: #ccc; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+.typing-indicator span:nth-of-type(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-of-type(2) { animation-delay: -0.16s; }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
