@@ -68,6 +68,12 @@
             background-clip: text;
             text-decoration: none;
         }
+        
+        /* Fixed logo image path */
+        .logo img {
+          height: 60px;
+          width: auto;
+        }
 
         .nav-links {
             display: flex;
@@ -374,6 +380,12 @@
             margin-bottom: 2rem;
             transition: all 0.3s ease;
         }
+        
+        /* Fixed icon paths */
+        .story-icon img {
+            width: 40px;
+            height: 40px;
+        }
 
         .story-card:hover .story-icon {
             transform: scale(1.1) rotate(10deg);
@@ -519,6 +531,12 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
+        }
+        
+        /* Fixed icon paths */
+        .value-icon img {
+            width: 50px;
+            height: 50px;
         }
 
         .value-icon::before {
@@ -760,6 +778,8 @@ nav .btn:hover {
   overflow: hidden;
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
+  /* Added list-style none */
+  list-style: none;
 }
 
 .menu-links a {
@@ -805,40 +825,32 @@ nav .btn:hover {
     </style>
 </head>
 <body>
-    <!-- Floating Background Elements -->
     <div class="floating-bg float-1"></div>
     <div class="floating-bg float-2"></div>
     <div class="floating-bg float-3"></div>
 
-    <!-- Navigation -->
-<nav>
-  <div class="logo">
-    <img src="./static/components/logo.png" alt="Umeed Logo" />
+    <nav id="navbar"> <div class="logo">
+    <img src="/static/components/logo.png" alt="Umeed Logo" />
   </div>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
     <li><a href="/resources">Resources</a></li>
-    <li><a href="/peerforum">Peer Forums</a></li>
+    <li><a href="/virtual-lounge">Virtual Lounge</a></li> <li><a href="/marketplace">Marketplace</a></li>
     <li><a href="/chat" class="btn">Get Started</a></li>
   </ul>
 
-  <!-- Hamburger for mobile -->
-  <div class="hamburger" onclick="toggleMenu(this)">
-    <span></span>
+  <div class="hamburger"> <span></span>
     <span></span>
     <span></span>
   </div>
 
-  <!-- Mobile links -->
-  <div class="menu-links">
-    <li><a href="/" onclick="toggleMenu()">Home</a></li>
-    <li><a href="/resources" onclick="toggleMenu()">Resources</a></li>
-    <li><a href="/peerforum" onclick="toggleMenu()">Peer forums</a></li>
-    <li><a href="/chat" class="btn" onclick="toggleMenu()">Get Started</a></li>
-  </div>
+  <ul class="menu-links"> <li><a href="/">Home</a></li>
+    <li><a href="/resources">Resources</a></li>
+    <li><a href="/virtual-lounge">Virtual Lounge</a></li> <li><a href="/marketplace">Marketplace</a></li>
+    <li><a href="/chat" class="btn">Get Started</a></li>
+  </ul>
 </nav>
 
-    <!-- Hero Section with Parallax -->
     <section class="hero-parallax" id="hero">
         <div class="parallax-layer">
             <div class="parallax-circles">
@@ -855,7 +867,6 @@ nav .btn:hover {
         </div>
     </section>
 
-    <!-- Our Story -->
     <section class="content-section values-section" id="story">
         <div class="container">
             <div class="section-content">
@@ -865,19 +876,19 @@ nav .btn:hover {
             
             <div class="story-cards">
                 <div class="story-card observe">
-                    <div class="story-icon"><img src="./static/components/spark.svg"></div>
+                    <div class="story-icon"><img src="/static/components/spark.svg"></div>
                     <h3>The Spark</h3>
                     <p>It started when our founders experienced the mental health crisis firsthand during their college years. Long waiting lists, expensive therapy, and services that didn't understand student life.</p>
                 </div>
                 
                 <div class="story-card observe">
-                    <div class="story-icon"><img src="./static/components/mission.svg"></div>
+                    <div class="story-icon"><img src="/static/components/mission.svg"></div>
                     <h3>The Mission</h3>
                     <p>We realized technology could bridge the gap between immediate need and professional care. Our AI provides instant support while connecting students with therapists who truly get it.</p>
                 </div>
                 
                 <div class="story-card observe">
-                    <div class="story-icon"><img src="./static/components/growth.svg"></div>
+                    <div class="story-icon"><img src="/static/components/growth.svg"></div>
                     <h3>The Growth</h3>
                     <p>Today, we're proud to support over 50,000 students across India, helping them navigate academic pressure, social challenges, and personal growth with confidence.</p>
                 </div>
@@ -885,7 +896,6 @@ nav .btn:hover {
         </div>
     </section>
 
-    <!-- Impact Stats -->
     <section class="content-section stats-section" id="stats">
         <div class="stats-bg">
             <div class="stats-pattern"></div>
@@ -921,7 +931,6 @@ nav .btn:hover {
         </div>
     </section>
 
-    <!-- Our Values -->
     <section class="content-section values-section" id="values">
         <div class="container">
             <div class="section-content">
@@ -931,25 +940,25 @@ nav .btn:hover {
             
             <div class="values-grid">
                 <div class="value-card observe">
-                    <div class="value-icon"><img src="./static/components/shield.svg"></div>
+                    <div class="value-icon"><img src="/static/components/shield.svg"></div>
                     <h3>Privacy First</h3>
                     <p>Your mental health journey is sacred. We use military-grade encryption and never share your data without explicit consent.</p>
                 </div>
                 
                 <div class="value-card observe">
-                    <div class="value-icon"><img src="./static/components/graduation-cap.svg"></div>
+                    <div class="value-icon"><img src="/static/components/graduation-cap.svg"></div>
                     <h3>Student-Centered</h3>
                     <p>Built by students, for students. Every feature addresses real challenges faced by the academic community in India.</p>
                 </div>
                 
                 <div class="value-card observe">
-                    <div class="value-icon"><img src="./static/components/clock.svg"></div>
+                    <div class="value-icon"><img src="/static/components/clock.svg"></div>
                     <h3>Always Available</h3>
                     <p>Mental health doesn't wait for office hours. Our AI provides instant support, and human therapists offer flexible scheduling.</p>
                 </div>
                 
                 <div class="value-card observe">
-                    <div class="value-icon"><img src="./static/components/wellness.svg"></div>
+                    <div class="value-icon"><img src="/static/components/wellness.svg"></div>
                     <h3>Holistic Wellness</h3>
                     <p>We don't just treat symptoms—we help you build lasting resilience, confidence, and emotional intelligence for life.</p>
                 </div>
@@ -957,7 +966,6 @@ nav .btn:hover {
         </div>
     </section>
 
-    <!-- Call to Action -->
     <section class="content-section cta-section" id="cta">
         <div class="cta-bg"></div>
         <div class="container">
@@ -1029,7 +1037,7 @@ nav .btn:hover {
         // Counter Animation
         function animateCounter(element, target) {
             let current = 0;
-            const increment = target / 50;
+            const increment = target / 50; // Controls speed
             const timer = setInterval(() => {
                 current += increment;
                 if (current >= target) {
@@ -1037,12 +1045,14 @@ nav .btn:hover {
                     clearInterval(timer);
                 }
                 
-                if (target > 1000) {
+                if (target > 999999) {
+                     element.textContent = (current / 1000000).toFixed(1) + 'M+';
+                } else if (target > 999) {
                     element.textContent = Math.floor(current / 1000) + 'K+';
                 } else {
                     element.textContent = Math.floor(current) + (target < 100 ? '%' : '+');
                 }
-            }, 30);
+            }, 30); // Interval time
         }
 
         // Smooth scrolling for scroll indicator
@@ -1063,18 +1073,22 @@ nav .btn:hover {
                 const x = mouseX * 50 * speed;
                 const y = mouseY * 50 * speed;
                 
-                element.style.transform += ` translate(${x}px, ${y}px)`;
+                // This logic is flawed, let's fix it to not just add transforms forever
+                let baseTransform = element.style.transform.replace(/ translate\([^)]*\)/g, '');
+                element.style.transform = baseTransform + ` translate(${x}px, ${y}px)`;
             });
         });
 
         // Add breathing animation to hero content
         const heroContent = document.querySelector('.hero-content');
-        setInterval(() => {
-            heroContent.style.transform = 'scale(1.01)';
-            setTimeout(() => {
-                heroContent.style.transform = 'scale(1)';
-            }, 1000);
-        }, 4000);
+        if (heroContent) {
+            setInterval(() => {
+                heroContent.style.transform = 'scale(1.01)';
+                setTimeout(() => {
+                    heroContent.style.transform = 'scale(1)';
+                }, 1000);
+            }, 4000);
+        }
 
         // Parallax for individual elements
         window.addEventListener('scroll', () => {
@@ -1090,7 +1104,7 @@ nav .btn:hover {
             document.querySelectorAll('.floating-bg').forEach((bg, index) => {
                 const speed = 0.05 + (index * 0.02);
                 const currentTransform = bg.style.transform || '';
-                bg.style.transform = currentTransform.replace(/translateY\([^)]*\)/g, '') + ` translateY(${scrollTop * speed}px)`;
+                bg.style.transform = currentTransform.replace(/ translateY\([^)]*\)/g, '') + ` translateY(${scrollTop * speed}px)`;
             });
         });
 
@@ -1113,8 +1127,11 @@ nav .btn:hover {
                     sparkle.style.animation = 'sparkle-float 1.5s ease-out forwards';
                     
                     const rect = element.getBoundingClientRect();
-                    sparkle.style.left = (rect.left + Math.random() * rect.width) + 'px';
-                    sparkle.style.top = (rect.top + Math.random() * rect.height) + 'px';
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+                    sparkle.style.left = (rect.left + scrollLeft + Math.random() * rect.width) + 'px';
+                    sparkle.style.top = (rect.top + scrollTop + Math.random() * rect.height) + 'px';
                     
                     document.body.appendChild(sparkle);
                     
@@ -1166,7 +1183,7 @@ nav .btn:hover {
             rotationAngle += 0.5;
             document.querySelectorAll('.floating-bg').forEach((bg, index) => {
                 const currentTransform = bg.style.transform || '';
-                bg.style.transform = currentTransform.replace(/rotate\([^)]*\)/g, '') + ` rotate(${rotationAngle + (index * 30)}deg)`;
+                bg.style.transform = currentTransform.replace(/ rotate\([^)]*\)/g, '') + ` rotate(${rotationAngle + (index * 30)}deg)`;
             });
         }, 100);
 
@@ -1179,22 +1196,28 @@ nav .btn:hover {
             }, 100);
         });
 
+        // Hamburger Menu Logic
         const hamburger = document.querySelector(".hamburger");
-  const menu = document.querySelector(".menu-links");
+        const menu = document.querySelector(".menu-links");
+        const menuLinks = document.querySelectorAll(".menu-links a");
 
-  // toggle menu on click
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("open");
-    menu.classList.toggle("open");
-  });
+        const toggleMenu = () => {
+            hamburger.classList.toggle("open");
+            menu.classList.toggle("open");
+        };
 
-  // auto-close menu if resized to desktop
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 768) {
-      hamburger.classList.remove("open");
-      menu.classList.remove("open");
-    }
-  });
+        hamburger.addEventListener("click", toggleMenu);
+        menuLinks.forEach(link => {
+            link.addEventListener("click", toggleMenu);
+        });
+
+        // auto-close menu if resized to desktop
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 768) {
+                hamburger.classList.remove("open");
+                menu.classList.remove("open");
+            }
+        });
     </script>
 </body>
 </html>

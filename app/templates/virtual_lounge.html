@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Lounge - Umeed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #7bb5ac;
+            --background-gradient: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+            --text-dark: #2C3E50;
+            --text-light: #5a6878;
+            --bot-bubble: #f1f1f1;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --zen-garden-bg: #87CEEB; /* Light blue for water */
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--background-gradient);
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Navbar --- */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0; 
+            box-sizing: border-box;
+        }
+        nav .logo img { height: 60px; width: auto; }
+        nav ul { display: flex; gap: 25px; list-style: none; align-items: center; }
+        nav ul li a { text-decoration: none; color: #333; font-size: 1rem; }
+        nav .btn { padding: 8px 16px; background: #7bb5ac; color: #fff !important; border-radius: 8px; font-weight: 500; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .hamburger span { width: 25px; height: 3px; background: #333; }
+        .menu-links { display: none; } /* Simplified */
+
+        @media (max-width: 768px) {
+            nav ul { display: none; }
+            .hamburger { display: flex; }
+        }
+        
+        /* --- Main Content Layout --- */
+        .lounge-container {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1; /* Take remaining height */
+            padding-top: 90px; /* Height of navbar */
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        /* --- Left Side: Zen Garden --- */
+        .zen-garden-container {
+            flex-basis: 60%;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .zen-garden-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .zen-garden-header h2 {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .zen-garden-header p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+        
+        #zen-garden {
+            flex-grow: 1;
+            background: var(--zen-garden-bg);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .flower {
+            position: absolute;
+            font-size: 2rem;
+            user-select: none;
+            animation: grow 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        
+        .ripple {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-effect 1s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes grow {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes ripple-effect {
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* --- Right Side: Chatbox --- */
+        .chat-container {
+            flex-basis: 40%;
+            padding: 1.5rem;
+            padding-left: 0.75rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Full height of parent */
+        }
+        
+        .chat-box {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eef;
+            flex-shrink: 0;
+        }
+        .chat-header h5 { margin: 0; font-weight: 600; color: var(--primary-color); }
+        
+        #messages {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            list-style-type: none;
+            margin: 0;
+        }
+        
+        #messages li {
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 12px;
+            background: var(--bot-bubble);
+            max-width: 90%;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+        
+        .chat-form {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eef;
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        #message_input {
+            flex-grow: 1;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1rem;
+        }
+        #message_input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        #send_button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        /* Responsive */
+        @media (max-width: 800px) {
+            .lounge-container {
+                flex-direction: column;
+                overflow-y: auto; /* Allow scrolling on mobile */
+            }
+            .zen-garden-container {
+                flex-basis: 40vh; /* Fixed height for garden */
+                padding-bottom: 0.75rem;
+            }
+            .chat-container {
+                flex-basis: 60vh; /* Fixed height for chat */
+                padding-left: 1.5rem;
+                padding-top: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <img src="/static/components/logo.png" alt="Umeed Logo" />
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/resources">Resources</a></li>
+            <li><a href="/marketplace">Marketplace</a></li>
+            <li><a href="/chat" class="btn">Get Started</a></li>
+        </ul>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        </nav>
+
+    <div class="lounge-container">
+        
+        <div class="zen-garden-container">
+            <div class="zen-garden-header">
+                <h2>Digital Zen Garden</h2>
+                <p>Click the water to plant a flower and find a moment of calm. 🌸</p>
+            </div>
+            <div id="zen-garden">
+                </div>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-box">
+                <header class="chat-header">
+                    <h5>Lounge Chat</h5>
+                </header>
+                
+                <ul id="messages">
+                    </ul>
+        
+                <form class="chat-form" id="chat_form" action="#">
+                    <input id="message_input" autocomplete="off" placeholder="Type an anonymous message..."/>
+                    <button id="send_button">Send</button>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- Zen Garden Logic ---
+            const garden = document.getElementById('zen-garden');
+            const flowers = ['🌸', '🌺', '🌻', '🌼', '🌷', '🌱'];
+            
+            garden.addEventListener('click', function(e) {
+                // Get click coordinates relative to the garden
+                const rect = garden.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // 1. Create a Ripple
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple';
+                ripple.style.left = `${x - 25}px`; // Center ripple
+                ripple.style.top = `${y - 25}px`;  // Center ripple
+                ripple.style.width = '50px';
+                ripple.style.height = '50px';
+                garden.appendChild(ripple);
+
+                // 2. Create a Flower
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                flower.style.left = `${x - 16}px`; // Center flower (font-size/2)
+                flower.style.top = `${y - 16}px`;  // Center flower (font-size/2)
+                
+                // Add flower slightly after ripple
+                setTimeout(() => {
+                    garden.appendChild(flower);
+                }, 100);
+
+                // Clean up elements after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 1000); // Ripple animation is 1s
+                
+                // Optional: remove flowers after a while
+                setTimeout(() => {
+                    flower.remove();
+                }, 10000); // Flower fades after 10s
+            });
+
+            // --- Chatbox Logic (from peerforum.html) ---
+            var socket = io();
+            var form = document.getElementById('chat_form');
+            var input = document.getElementById('message_input');
+            var messages = document.getElementById('messages');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (input.value) {
+                    socket.emit('send_message', { 'data': input.value });
+                    input.value = '';
+                }
+            });
+
+            socket.on('receive_message', function(msg) {
+                var item = document.createElement('li');
+                item.textContent = msg.data;
+                messages.appendChild(item);
+                messages.scrollTop = messages.scrollHeight;
+            });
+            
+            // --- Hamburger Menu Logic ---
+            const hamburger = document.querySelector(".hamburger");
+            // Mobile menu isn't fully built in this nav, but if it were:
+            // const menu = document.querySelector(".menu-links");
+            if (hamburger) {
+                hamburger.addEventListener("click", () => {
+                    alert("Mobile menu clicked!");
+                    // hamburger.classList.toggle("open");
+                    // menu.classList.toggle("open");
+                });
+            }
+        });
+    </script>
+</body>
+</html>

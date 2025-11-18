@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resources - Umeed</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - Umeed</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
     <style>
         :root {
@@ -31,7 +33,7 @@
             margin-top: 100px; /* Space for fixed navbar */
         }
         /* Header */
-        .resources-header {
+        .marketplace-header {
             text-align: center;
             margin-bottom: 3rem;
             padding: 3rem 2rem;
@@ -41,67 +43,91 @@
             position: relative;
             overflow: hidden;
         }
-        .resources-header h1 {
+        .marketplace-header h1 {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-        .resources-header p {
+        .marketplace-header p {
             font-size: 1.2rem;
             opacity: 0.9;
             max-width: 700px;
             margin: 0 auto;
         }
 
-        /* --- NEW: Section Title --- */
         .section-title {
             font-size: 2rem;
             font-weight: 600;
             color: var(--text-dark);
-            margin: 3rem 0 2rem 0;
+            margin-bottom: 2rem;
             border-bottom: 3px solid var(--primary-blue);
             padding-bottom: 0.5rem;
             display: inline-block;
         }
 
-        /* Resources Grid */
-        .resources-grid {
+        /* Grid for cards */
+        .marketplace-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
+            margin-bottom: 3rem;
         }
-        .resource-card {
+        .item-card {
             background: var(--white);
             border-radius: 20px;
-            padding: 2rem;
             box-shadow: 0 10px 40px rgba(135, 206, 235, 0.1);
             border: 1px solid rgba(135, 206, 235, 0.2);
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
-        .resource-card:hover {
+        .item-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 20px 50px rgba(135, 206, 235, 0.2);
         }
-        .resource-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--dark-blue);
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: var(--light-gray);
         }
-        .resource-card h3 {
+        .item-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .item-card h3 {
             font-size: 1.4rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
-        .resource-card p {
+        .item-specialty {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+        .item-card p {
             color: var(--text-light);
             flex-grow: 1;
             margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
-        .action-btn { /* Renamed from download-btn */
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-price {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+        .buy-btn {
             display: inline-block;
-            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            background: linear-gradient(135deg, var(--green), #27ae60);
             color: white;
             padding: 0.8rem 1.5rem;
             border-radius: 50px;
@@ -109,19 +135,14 @@
             font-weight: 600;
             text-align: center;
             transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
         }
-        .action-btn:hover {
+        .buy-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
-        }
-        /* --- NEW: Style for web-app buttons --- */
-        .action-btn.web-app {
-            background: linear-gradient(135deg, var(--green), #27ae60);
-        }
-        .action-btn.web-app:hover {
             box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
         }
-
+        
         /* Navbar */
         nav {
             background: rgba(255, 255, 255, 0.95);
@@ -145,7 +166,7 @@
         nav .btn:hover { background: #2c3e50; }
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
         .hamburger span { width: 25px; height: 3px; background: #333; transition: all 0.3s ease-in-out; }
-        .menu-links { position: absolute; right: 5%; top: 70px; background-color: white; width: fit-content; max-height: 0; overflow: hidden; border-radius: 10px; transition: all 0.3s ease-in-out; list-style: none; }
+        .menu-links { position: absolute; right: 5%; top: 70px; background-color: white; width: fit-content; max-height: 0; overflow: hidden; border-radius: 10px; transition: all 0.3s ease-in-out; }
         .menu-links.open { max-height: 300px; }
         .menu-links a { display: block; padding: 10px 20px; text-align: left; font-size: 1rem; color: black; text-decoration: none; }
         .menu-links li { list-style: none; }
@@ -156,6 +177,7 @@
             nav ul { display: none; }
             .hamburger { display: flex; }
             .container { margin-top: 80px; }
+            .marketplace-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -188,71 +210,48 @@
     </nav>
 
     <div class="container">
-        <header class="resources-header">
-            <h1>Mental Health Resources</h1>
-            <p>A curated collection of guides, toolkits, and interactive tools to help you navigate student life with confidence.</p>
+        <header class="marketplace-header">
+            <h1>Student Wellness Marketplace</h1>
+            <p>A curated selection of services and products to support your mental and academic well-being.</p>
         </header>
 
-        <h2 class="section-title">Downloadable Guides (PDFs)</h2>
-        <main class="resources-grid">
-            <div class="resource-card">
-                <div class="resource-icon">📚</div>
-                <h3>Diagnostic and Statistical Manual (DSM-5)</h3>
-                <p>An overview and guide to understanding the diagnostic criteria for mental health disorders, as used by professionals.</p>
-                <a href="../static/resources/Diagnostic and statistical manual of mental disorders _ DSM-5 ( PDFDrive.com ).pdf" class="action-btn" download>Download PDF</a>
+        <h2 class="section-title">Verified Therapists</h2>
+        <main class="marketplace-grid">
+            {% for therapist in therapists %}
+            <div class="item-card">
+                <img src="{{ therapist.image_url }}" alt="{{ therapist.name }}" class="item-image">
+                <div class="item-content">
+                    <h3>{{ therapist.name }}</h3>
+                    <div class="item-specialty">{{ therapist.specialty }}</div>
+                    <p>{{ therapist.description }}</p>
+                    <div class="item-footer">
+                        <span class="item-price">₹{{ "%.0f"|format(therapist.price) }}/session</span>
+                        <button class="buy-btn" onclick="alert('Payment integration coming soon! This is a demo.')">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div class="resource-card">
-                <div class="resource-icon">🌍</div>
-                <h3>WHO Mental Health Guidebook</h3>
-                <p>A practical toolkit from the World Health Organization with strategies for promoting mental well-being and managing stress.</p>
-                <a href="../static/resources/MHGuidebook-WHO.pdf" class="action-btn" download>Download PDF</a>
-            </div>
-
-            <div class="resource-card">
-                <div class="resource-icon">❤️</div>
-                <h3>Psychiatric Mental Health Nursing</h3>
-                <p>Explore concepts of care in evidence-based practice. An in-depth resource for those interested in the clinical side of care.</p>
-                <a href="../static/resources/Psychiatric Mental Health Nursing Concepts of Care in Evidence-Based Practice by Mary C. Townsend DSN  PMHCNS-BC (z-lib.org).pdf" class="action-btn" download>Download PDF</a>
-            </div>
-
-            <div class="resource-card">
-                <div class="resource-icon">📖</div>
-                <h3>The Little Book Of Mental Health</h3>
-                <p>A clear, non-judgmental guide to understanding the signs of common mental health challenges and learning when/how to seek help.</p>
-                <a href="../static/resources/The Little Book Of Mental Health.pdf" class="action-btn" download>Download PDF</a>
-            </div>
-
-            <div class="resource-card">
-                <div class="resource-icon">🧠</div>
-                <h3>Understanding Mental Illnesses</h3>
-                <p>A comprehensive guide to various mental illnesses, their symptoms, and the importance of reducing stigma.</p>
-                <a href="../static/resources/Understanding Mental Illnesses.pdf" class="action-btn" download>Download PDF</a>
-            </div>
+            {% endfor %}
         </main>
 
-        <h2 class="section-title">Web-Based Relaxation & VR</h2>
-        <main class="resources-grid">
-            <div class="resource-card">
-                <div class="resource-icon">🧘</div>
-                <h3>Guided Breathing Exercise</h3>
-                <p>A simple, full-screen web tool to help you sync your breathing and find calm in just one minute. No signup required.</p>
-                <a href="https://www.calm.com/breathe" class="action-btn web-app" target="_blank" rel="noopener noreferrer">Open Exercise</a>
+        <h2 class="section-title">Wellness Products</h2>
+        <main class="marketplace-grid">
+            {% for product in products %}
+            <div class="item-card">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="item-image">
+                <div class="item-content">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description }}</p>
+                    <div class="item-footer">
+                        <span class="item-price">₹{{ "%.0f"|format(product.price) }}</span>
+                        <button class="buy-btn" onclick="alert('Payment integration coming soon! This is a demo.')">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div class="resource-card">
-                <div class="resource-icon">🕶️</div>
-                <h3>VR Zen Garden (WebXR)</h3>
-                <p>Enter a peaceful 3D zen garden right in your browser. Works on desktop, phone, or with a VR headset (like Quest).</p>
-                <a href="https://aframe.io/examples/showcase/zen-garden/" class="action-btn web-app" target="_blank" rel="noopener noreferrer">Enter VR Room</a>
-            </div>
-
-            <div class="resource-card">
-                <div class="resource-icon">🎶</div>
-                <h3>Interactive Soundscape</h3>
-                <p>Create your own relaxing soundscape. Mix and match ambient sounds like rain, wind, and fire to help you focus or relax.</p>
-                <a href="https://noises.online/" class="action-btn web-app" target="_blank" rel="noopener noreferrer">Create Soundscape</a>
-            </div>
+            {% endfor %}
         </main>
 
     </div>
@@ -260,24 +259,10 @@
     <script>
         const hamburger = document.querySelector(".hamburger");
         const menu = document.querySelector(".menu-links");
-        const menuLinks = document.querySelectorAll(".menu-links a");
 
-        const toggleMenu = () => {
+        hamburger.addEventListener("click", () => {
             hamburger.classList.toggle("open");
             menu.classList.toggle("open");
-        };
-
-        hamburger.addEventListener("click", toggleMenu);
-        menuLinks.forEach(link => {
-            link.addEventListener("click", toggleMenu);
-        });
-
-        // auto-close menu if resized to desktop
-        window.addEventListener("resize", () => {
-            if (window.innerWidth > 768) {
-                hamburger.classList.remove("open");
-                menu.classList.remove("open");
-            }
         });
     </script>
 </body>

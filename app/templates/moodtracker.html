@@ -616,6 +616,8 @@ nav .btn:hover {
   overflow: hidden;
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
+  /* Added */
+  list-style: none;
 }
 
 .menu-links a {
@@ -661,45 +663,37 @@ nav .btn:hover {
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-<nav>
+    <nav>
   <div class="logo">
-    <img src="./components/logo.png" alt="Umeed Logo" />
+    <img src="/static/components/logo.png" alt="Umeed Logo" />
   </div>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
     <li><a href="/about">About</a></li>
-    <li><a href="/peerforum">Peer Forums</a></li>
+    <li><a href="/virtual-lounge">Virtual Lounge</a></li> <li><a href="/marketplace">Marketplace</a></li>
     <li><a href="/chat" class="btn">Get Started</a></li>
   </ul>
 
-  <!-- Hamburger for mobile -->
-  <div class="hamburger" onclick="toggleMenu(this)">
-    <span></span>
+  <div class="hamburger"> <span></span>
     <span></span>
     <span></span>
   </div>
 
-  <!-- Mobile links -->
-  <div class="menu-links">
-    <li><a href="/" onclick="toggleMenu()">Home</a></li>
-    <li><a href="/about" onclick="toggleMenu()">About</a></li>
-    <li><a href="/peerforum" onclick="toggleMenu()">Peer forums</a></li>
-    <li><a href="/chat" class="btn" onclick="toggleMenu()">Get Started</a></li>
-  </div>
+  <ul class="menu-links"> <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/virtual-lounge">Virtual Lounge</a></li> <li><a href="/marketplace">Marketplace</a></li>
+    <li><a href="/chat" class="btn">Get Started</a></li>
+  </ul>
 </nav>
     <div class="container">
-        <!-- Header -->
         <div class="tracker-header fade-in">
             <h1>Daily Mood Check-in</h1>
             <p>How are you feeling today? Let's track your journey to better mental health</p>
         </div>
 
-        <!-- Today's Check-in -->
         <div class="today-checkin fade-in">
             <h2 class="section-title">Today's Check-in</h2>
             
-            <!-- Mood Selection -->
             <div class="mood-selection">
                 <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-dark);">How's your mood?</h3>
                 <div class="mood-grid">
@@ -738,7 +732,6 @@ nav .btn:hover {
                 </div>
             </div>
 
-            <!-- Energy & Stress Sliders -->
             <div class="sliders-section">
                 <div class="slider-group">
                     <div class="slider-label">Energy Level</div>
@@ -756,7 +749,6 @@ nav .btn:hover {
                 </div>
             </div>
 
-            <!-- Activities -->
             <div class="activity-section">
                 <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">What did you do today?</h3>
                 <div class="activity-tags">
@@ -771,7 +763,6 @@ nav .btn:hover {
                 </div>
             </div>
 
-            <!-- Notes -->
             <div class="notes-section">
                 <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">Any thoughts or notes?</h3>
                 <textarea 
@@ -782,7 +773,6 @@ nav .btn:hover {
                 ></textarea>
             </div>
 
-            <!-- Save Button -->
             <div class="save-section">
                 <button class="save-btn" onclick="saveMoodEntry()">
                     💾 Save Today's Check-in
@@ -793,15 +783,12 @@ nav .btn:hover {
             </div>
         </div>
 
-        <!-- Mood History -->
         <div class="mood-history fade-in">
             <h2 class="section-title">Your Mood Journey</h2>
             <div class="history-grid" id="mood-history">
-                <!-- Dynamic mood history will be populated here -->
-            </div>
+                </div>
         </div>
 
-        <!-- Insights Panel -->
         <div class="insights-panel fade-in">
             <div class="insights-content">
                 <h2 class="section-title" style="color: white; margin-bottom: 2rem;">Weekly Insights</h2>
@@ -881,6 +868,29 @@ nav .btn:hover {
             stressSlider.addEventListener('input', function() {
                 stressValue.textContent = `${this.value}/10`;
                 updateSliderColor(this);
+            });
+            
+            // Hamburger Menu Logic
+            const hamburger = document.querySelector(".hamburger");
+            const menu = document.querySelector(".menu-links");
+            const menuLinks = document.querySelectorAll(".menu-links a");
+
+            const toggleMenu = () => {
+                hamburger.classList.toggle("open");
+                menu.classList.toggle("open");
+            };
+
+            hamburger.addEventListener("click", toggleMenu);
+            menuLinks.forEach(link => {
+                link.addEventListener("click", toggleMenu);
+            });
+
+            // auto-close menu if resized to desktop
+            window.addEventListener("resize", () => {
+                if (window.innerWidth > 768) {
+                    hamburger.classList.remove("open");
+                    menu.classList.remove("open");
+                }
             });
         }
 
@@ -1018,7 +1028,8 @@ nav .btn:hover {
 
             historyContainer.innerHTML = moodData.map(entry => {
                 const date = new Date(entry.date);
-                const formattedDate = date.toLocaleDateString('en-IN', { 
+                // Use a stable date format
+                const formattedDate = new Date(entry.timestamp).toLocaleDateString('en-IN', { 
                     month: 'short', 
                     day: 'numeric' 
                 });
@@ -1115,7 +1126,7 @@ nav .btn:hover {
                 'anxious': '😟'
             };
 
-            const date = new Date(entry.date).toLocaleDateString('en-IN', { 
+            const date = new Date(entry.timestamp).toLocaleDateString('en-IN', { 
                 weekday: 'long',
                 year: 'numeric', 
                 month: 'long', 
@@ -1240,6 +1251,8 @@ nav .btn:hover {
             if (moodData.length < 3) return;
 
             const insights = document.querySelector('.insights-content');
+            if (!insights) return; // Guard clause
+            
             const recentEntries = moodData.slice(0, 7); // Last 7 days
             
             // Calculate averages
@@ -1397,22 +1410,6 @@ nav .btn:hover {
                 document.getElementById('mood-notes').value = draft.notes;
             }
         }
-          const hamburger = document.querySelector(".hamburger");
-  const menu = document.querySelector(".menu-links");
-
-  // toggle menu on click
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("open");
-    menu.classList.toggle("open");
-  });
-
-  // auto-close menu if resized to desktop
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 768) {
-      hamburger.classList.remove("open");
-      menu.classList.remove("open");
-    }
-  });
     </script>
 </body>
 </html>
